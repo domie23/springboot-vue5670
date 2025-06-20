@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BingrenDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.yonghu_id as yonghuId
+        ,a.kanhuren_name as kanhurenName
+        ,a.kanhuren_phone as kanhurenPhone
+        ,a.bingren_name as bingrenName
+        ,a.bingren_phone as bingrenPhone
+        ,a.bingren_id_number as bingrenIdNumber
+        ,a.sex_types as sexTypes
+        ,a.bingren_types as bingrenTypes
+        ,a.age as age
+        ,a.bingren_photo as bingrenPhoto
+        ,a.bingren_content as bingrenContent
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BingrenView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,yonghu.yonghu_name as yonghuName
+        ,yonghu.yonghu_phone as yonghuPhone
+        ,yonghu.yonghu_id_number as yonghuIdNumber
+        ,yonghu.yonghu_photo as yonghuPhoto
+        ,yonghu.yonghu_email as yonghuEmail
+        ,yonghu.new_money as newMoney
+
+        FROM bingren  a
+        left JOIN yonghu yonghu ON a.yonghu_id = yonghu.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.yonghuId != null and params.yonghuId != ''">
+                and (
+                    a.yonghu_id = #{params.yonghuId}
+                )
+            </if>
+            <if test=" params.kanhurenName != '' and params.kanhurenName != null and params.kanhurenName != 'null' ">
+                and a.kanhuren_name like CONCAT('%',#{params.kanhurenName},'%')
+            </if>
+            <if test=" params.kanhurenPhone != '' and params.kanhurenPhone != null and params.kanhurenPhone != 'null' ">
+                and a.kanhuren_phone like CONCAT('%',#{params.kanhurenPhone},'%')
+            </if>
+            <if test=" params.bingrenName != '' and params.bingrenName != null and params.bingrenName != 'null' ">
+                and a.bingren_name like CONCAT('%',#{params.bingrenName},'%')
+            </if>
+            <if test=" params.bingrenPhone != '' and params.bingrenPhone != null and params.bingrenPhone != 'null' ">
+                and a.bingren_phone like CONCAT('%',#{params.bingrenPhone},'%')
+            </if>
+            <if test=" params.bingrenIdNumber != '' and params.bingrenIdNumber != null and params.bingrenIdNumber != 'null' ">
+                and a.bingren_id_number like CONCAT('%',#{params.bingrenIdNumber},'%')
+            </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test="params.bingrenTypes != null and params.bingrenTypes != ''">
+                and a.bingren_types = #{params.bingrenTypes}
+            </if>
+            <if test="params.ageStart != null and params.ageStart != ''">
+                <![CDATA[  and a.age >= #{params.ageStart}   ]]>
+            </if>
+            <if test="params.ageEnd != null and params.ageEnd != ''">
+                <![CDATA[  and a.age <= #{params.ageEnd}   ]]>
+            </if>
+             <if test="params.age != null and params.age != ''">
+                and a.age = #{params.age}
+             </if>
+            <if test=" params.bingrenContent != '' and params.bingrenContent != null and params.bingrenContent != 'null' ">
+                and a.bingren_content like CONCAT('%',#{params.bingrenContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断用户的id不为空 -->
+            <if test=" params.yonghuIdNotNull != '' and params.yonghuIdNotNull != null and params.yonghuIdNotNull != 'null' ">
+                and a.yonghu_id IS NOT NULL
+            </if>
+            <if test=" params.yonghuName != '' and params.yonghuName != null and params.yonghuName != 'null' ">
+                and yonghu.yonghu_name like CONCAT('%',#{params.yonghuName},'%')
+            </if>
+            <if test=" params.yonghuPhone != '' and params.yonghuPhone != null and params.yonghuPhone != 'null' ">
+                and yonghu.yonghu_phone like CONCAT('%',#{params.yonghuPhone},'%')
+            </if>
+            <if test=" params.yonghuIdNumber != '' and params.yonghuIdNumber != null and params.yonghuIdNumber != 'null' ">
+                and yonghu.yonghu_id_number like CONCAT('%',#{params.yonghuIdNumber},'%')
+            </if>
+            <if test=" params.yonghuEmail != '' and params.yonghuEmail != null and params.yonghuEmail != 'null' ">
+                and yonghu.yonghu_email like CONCAT('%',#{params.yonghuEmail},'%')
+            </if>
+            <if test="params.newMoneyStart != null ">
+                <![CDATA[  and yonghu.new_money >= #{params.newMoneyStart}   ]]>
+            </if>
+            <if test="params.newMoneyEnd != null ">
+                <![CDATA[  and yonghu.new_money <= #{params.newMoneyEnd}   ]]>
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

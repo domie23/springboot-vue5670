@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.BingliDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.bingli_uuid_number as bingliUuidNumber
+        ,a.bingren_id as bingrenId
+        ,a.yisheng_id as yishengId
+        ,a.jiancha_time as jianchaTime
+        ,a.bingrenzishu_content as bingrenzishuContent
+        ,a.jianchajieguo_content as jianchajieguoContent
+        ,a.yishengkaifang_content as yishengkaifangContent
+        ,a.yishengjianyi_content as yishengjianyiContent
+        ,a.huafeijine as huafeijine
+        ,a.xiacijiuzhen_time as xiacijiuzhenTime
+        ,a.bingli_types as bingliTypes
+        ,a.insert_time as insertTime
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.BingliView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+        ,bingren.yonghu_id as bingrenYonghuId
+        ,bingren.kanhuren_name as kanhurenName
+        ,bingren.kanhuren_phone as kanhurenPhone
+        ,bingren.bingren_name as bingrenName
+        ,bingren.bingren_phone as bingrenPhone
+        ,bingren.bingren_id_number as bingrenIdNumber
+        ,bingren.sex_types as sexTypes
+        ,bingren.bingren_types as bingrenTypes
+        ,bingren.age as age
+        ,bingren.bingren_photo as bingrenPhoto
+        ,bingren.bingren_content as bingrenContent
+        ,yisheng.yisheng_name as yishengName
+        ,yisheng.yisheng_phone as yishengPhone
+        ,yisheng.yisheng_id_number as yishengIdNumber
+        ,yisheng.yisheng_photo as yishengPhoto
+        ,yisheng.zuozhen_shijian as zuozhenShijian
+        ,yisheng.guahaojine as guahaojine
+        ,yisheng.guahaoshuliang as guahaoshuliang
+        ,yisheng.keshi_types as keshiTypes
+        ,yisheng.zhiwei_types as zhiweiTypes
+        ,yisheng.yisheng_email as yishengEmail
+        ,yisheng.yisheng_content as yishengContent
+
+        FROM bingli  a
+        left JOIN bingren bingren ON a.bingren_id = bingren.id
+        left JOIN yisheng yisheng ON a.yisheng_id = yisheng.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.bingliUuidNumber != '' and params.bingliUuidNumber != null and params.bingliUuidNumber != 'null' ">
+                and a.bingli_uuid_number like CONCAT('%',#{params.bingliUuidNumber},'%')
+            </if>
+            <if test="params.bingrenId != null and params.bingrenId != ''">
+                and (
+                    a.bingren_id = #{params.bingrenId}
+                )
+            </if>
+            <if test="params.yishengId != null and params.yishengId != ''">
+                and (
+                    a.yisheng_id = #{params.yishengId}
+                )
+            </if>
+            <if test=" params.jianchaTimeStart != '' and params.jianchaTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.jiancha_time) >= UNIX_TIMESTAMP(#{params.jianchaTimeStart}) ]]>
+            </if>
+            <if test=" params.jianchaTimeEnd != '' and params.jianchaTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.jiancha_time) <= UNIX_TIMESTAMP(#{params.jianchaTimeEnd}) ]]>
+            </if>
+            <if test=" params.bingrenzishuContent != '' and params.bingrenzishuContent != null and params.bingrenzishuContent != 'null' ">
+                and a.bingrenzishu_content like CONCAT('%',#{params.bingrenzishuContent},'%')
+            </if>
+            <if test=" params.jianchajieguoContent != '' and params.jianchajieguoContent != null and params.jianchajieguoContent != 'null' ">
+                and a.jianchajieguo_content like CONCAT('%',#{params.jianchajieguoContent},'%')
+            </if>
+            <if test=" params.yishengkaifangContent != '' and params.yishengkaifangContent != null and params.yishengkaifangContent != 'null' ">
+                and a.yishengkaifang_content like CONCAT('%',#{params.yishengkaifangContent},'%')
+            </if>
+            <if test=" params.yishengjianyiContent != '' and params.yishengjianyiContent != null and params.yishengjianyiContent != 'null' ">
+                and a.yishengjianyi_content like CONCAT('%',#{params.yishengjianyiContent},'%')
+            </if>
+            <if test="params.huafeijineStart != null ">
+                <![CDATA[  and a.huafeijine >= #{params.huafeijineStart}   ]]>
+            </if>
+            <if test="params.huafeijineEnd != null ">
+                <![CDATA[  and a.huafeijine <= #{params.huafeijineEnd}   ]]>
+            </if>
+            <if test=" params.xiacijiuzhenTimeStart != '' and params.xiacijiuzhenTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.xiacijiuzhen_time) >= UNIX_TIMESTAMP(#{params.xiacijiuzhenTimeStart}) ]]>
+            </if>
+            <if test=" params.xiacijiuzhenTimeEnd != '' and params.xiacijiuzhenTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.xiacijiuzhen_time) <= UNIX_TIMESTAMP(#{params.xiacijiuzhenTimeEnd}) ]]>
+            </if>
+            <if test="params.bingliTypes != null and params.bingliTypes != ''">
+                and a.bingli_types = #{params.bingliTypes}
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(a.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+
+                <!-- 判断病人的id不为空 -->
+            <if test=" params.bingrenIdNotNull != '' and params.bingrenIdNotNull != null and params.bingrenIdNotNull != 'null' ">
+                and a.bingren_id IS NOT NULL
+            </if>
+            <if test="params.yonghuId != null  and params.yonghuId != ''">
+                and bingren.yonghu_id = #{params.yonghuId}
+            </if>
+            <if test=" params.kanhurenName != '' and params.kanhurenName != null and params.kanhurenName != 'null' ">
+                and bingren.kanhuren_name like CONCAT('%',#{params.kanhurenName},'%')
+            </if>
+            <if test=" params.kanhurenPhone != '' and params.kanhurenPhone != null and params.kanhurenPhone != 'null' ">
+                and bingren.kanhuren_phone like CONCAT('%',#{params.kanhurenPhone},'%')
+            </if>
+            <if test=" params.bingrenName != '' and params.bingrenName != null and params.bingrenName != 'null' ">
+                and bingren.bingren_name like CONCAT('%',#{params.bingrenName},'%')
+            </if>
+            <if test=" params.bingrenPhone != '' and params.bingrenPhone != null and params.bingrenPhone != 'null' ">
+                and bingren.bingren_phone like CONCAT('%',#{params.bingrenPhone},'%')
+            </if>
+            <if test=" params.bingrenIdNumber != '' and params.bingrenIdNumber != null and params.bingrenIdNumber != 'null' ">
+                and bingren.bingren_id_number like CONCAT('%',#{params.bingrenIdNumber},'%')
+            </if>
+            <if test="params.sexTypes != null  and params.sexTypes != ''">
+                and bingren.sex_types = #{params.sexTypes}
+            </if>
+
+            <if test="params.bingrenTypes != null  and params.bingrenTypes != ''">
+                and bingren.bingren_types = #{params.bingrenTypes}
+            </if>
+
+            <if test="params.ageStart != null  and params.ageStart != '' ">
+                <![CDATA[  and bingren.age >= #{params.ageStart}   ]]>
+            </if>
+            <if test="params.ageEnd != null  and params.ageEnd != '' ">
+                <![CDATA[  and bingren.age <= #{params.ageEnd}   ]]>
+            </if>
+            <if test="params.age != null  and params.age != '' ">
+                and bingren.age = #{params.age}
+            </if>
+            <if test=" params.bingrenContent != '' and params.bingrenContent != null and params.bingrenContent != 'null' ">
+                and bingren.bingren_content like CONCAT('%',#{params.bingrenContent},'%')
+            </if>
+            <if test=" params.insertTimeStart != '' and params.insertTimeStart != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(bingren.insert_time) >= UNIX_TIMESTAMP(#{params.insertTimeStart}) ]]>
+            </if>
+            <if test=" params.insertTimeEnd != '' and params.insertTimeEnd != null ">
+                <![CDATA[  and UNIX_TIMESTAMP(bingren.insert_time) <= UNIX_TIMESTAMP(#{params.insertTimeEnd}) ]]>
+            </if>
+                <!-- 判断医生的id不为空 -->
+            <if test=" params.yishengIdNotNull != '' and params.yishengIdNotNull != null and params.yishengIdNotNull != 'null' ">
+                and a.yisheng_id IS NOT NULL
+            </if>
+            <if test=" params.yishengName != '' and params.yishengName != null and params.yishengName != 'null' ">
+                and yisheng.yisheng_name like CONCAT('%',#{params.yishengName},'%')
+            </if>
+            <if test=" params.yishengPhone != '' and params.yishengPhone != null and params.yishengPhone != 'null' ">
+                and yisheng.yisheng_phone like CONCAT('%',#{params.yishengPhone},'%')
+            </if>
+            <if test=" params.yishengIdNumber != '' and params.yishengIdNumber != null and params.yishengIdNumber != 'null' ">
+                and yisheng.yisheng_id_number like CONCAT('%',#{params.yishengIdNumber},'%')
+            </if>
+            <if test=" params.zuozhenShijian != '' and params.zuozhenShijian != null and params.zuozhenShijian != 'null' ">
+                and yisheng.zuozhen_shijian like CONCAT('%',#{params.zuozhenShijian},'%')
+            </if>
+            <if test="params.guahaojineStart != null ">
+                <![CDATA[  and yisheng.guahaojine >= #{params.guahaojineStart}   ]]>
+            </if>
+            <if test="params.guahaojineEnd != null ">
+                <![CDATA[  and yisheng.guahaojine <= #{params.guahaojineEnd}   ]]>
+            </if>
+            <if test="params.guahaoshuliangStart != null  and params.guahaoshuliangStart != '' ">
+                <![CDATA[  and yisheng.guahaoshuliang >= #{params.guahaoshuliangStart}   ]]>
+            </if>
+            <if test="params.guahaoshuliangEnd != null  and params.guahaoshuliangEnd != '' ">
+                <![CDATA[  and yisheng.guahaoshuliang <= #{params.guahaoshuliangEnd}   ]]>
+            </if>
+            <if test="params.guahaoshuliang != null  and params.guahaoshuliang != '' ">
+                and yisheng.guahaoshuliang = #{params.guahaoshuliang}
+            </if>
+            <if test="params.keshiTypes != null  and params.keshiTypes != ''">
+                and yisheng.keshi_types = #{params.keshiTypes}
+            </if>
+
+            <if test="params.zhiweiTypes != null  and params.zhiweiTypes != ''">
+                and yisheng.zhiwei_types = #{params.zhiweiTypes}
+            </if>
+
+            <if test=" params.yishengEmail != '' and params.yishengEmail != null and params.yishengEmail != 'null' ">
+                and yisheng.yisheng_email like CONCAT('%',#{params.yishengEmail},'%')
+            </if>
+            <if test=" params.yishengContent != '' and params.yishengContent != null and params.yishengContent != 'null' ">
+                and yisheng.yisheng_content like CONCAT('%',#{params.yishengContent},'%')
+            </if>
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.YishengDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.username as username
+        ,a.password as password
+        ,a.yisheng_name as yishengName
+        ,a.yisheng_phone as yishengPhone
+        ,a.yisheng_id_number as yishengIdNumber
+        ,a.yisheng_photo as yishengPhoto
+        ,a.zuozhen_shijian as zuozhenShijian
+        ,a.guahaojine as guahaojine
+        ,a.guahaoshuliang as guahaoshuliang
+        ,a.sex_types as sexTypes
+        ,a.keshi_types as keshiTypes
+        ,a.zhiwei_types as zhiweiTypes
+        ,a.yisheng_email as yishengEmail
+        ,a.yisheng_content as yishengContent
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.YishengView" >
+        SELECT
+        <include refid="Base_Column_List" />
+        <!-- 级联表的字段 -->
+
+        FROM yisheng  a
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test=" params.username != '' and params.username != null and params.username != 'null' ">
+                and a.username like CONCAT('%',#{params.username},'%')
+            </if>
+            <if test=" params.password != '' and params.password != null and params.password != 'null' ">
+                and a.password like CONCAT('%',#{params.password},'%')
+            </if>
+            <if test=" params.yishengName != '' and params.yishengName != null and params.yishengName != 'null' ">
+                and a.yisheng_name like CONCAT('%',#{params.yishengName},'%')
+            </if>
+            <if test=" params.yishengPhone != '' and params.yishengPhone != null and params.yishengPhone != 'null' ">
+                and a.yisheng_phone like CONCAT('%',#{params.yishengPhone},'%')
+            </if>
+            <if test=" params.yishengIdNumber != '' and params.yishengIdNumber != null and params.yishengIdNumber != 'null' ">
+                and a.yisheng_id_number like CONCAT('%',#{params.yishengIdNumber},'%')
+            </if>
+            <if test=" params.zuozhenShijian != '' and params.zuozhenShijian != null and params.zuozhenShijian != 'null' ">
+                and a.zuozhen_shijian like CONCAT('%',#{params.zuozhenShijian},'%')
+            </if>
+            <if test="params.guahaojineStart != null ">
+                <![CDATA[  and a.guahaojine >= #{params.guahaojineStart}   ]]>
+            </if>
+            <if test="params.guahaojineEnd != null ">
+                <![CDATA[  and a.guahaojine <= #{params.guahaojineEnd}   ]]>
+            </if>
+            <if test="params.guahaoshuliangStart != null and params.guahaoshuliangStart != ''">
+                <![CDATA[  and a.guahaoshuliang >= #{params.guahaoshuliangStart}   ]]>
+            </if>
+            <if test="params.guahaoshuliangEnd != null and params.guahaoshuliangEnd != ''">
+                <![CDATA[  and a.guahaoshuliang <= #{params.guahaoshuliangEnd}   ]]>
+            </if>
+             <if test="params.guahaoshuliang != null and params.guahaoshuliang != ''">
+                and a.guahaoshuliang = #{params.guahaoshuliang}
+             </if>
+            <if test="params.sexTypes != null and params.sexTypes != ''">
+                and a.sex_types = #{params.sexTypes}
+            </if>
+            <if test="params.keshiTypes != null and params.keshiTypes != ''">
+                and a.keshi_types = #{params.keshiTypes}
+            </if>
+            <if test="params.zhiweiTypes != null and params.zhiweiTypes != ''">
+                and a.zhiwei_types = #{params.zhiweiTypes}
+            </if>
+            <if test=" params.yishengEmail != '' and params.yishengEmail != null and params.yishengEmail != 'null' ">
+                and a.yisheng_email like CONCAT('%',#{params.yishengEmail},'%')
+            </if>
+            <if test=" params.yishengContent != '' and params.yishengContent != null and params.yishengContent != 'null' ">
+                and a.yisheng_content like CONCAT('%',#{params.yishengContent},'%')
+            </if>
+
+        </where>
+        order by a.${params.sort} ${params.order}
+    </select>
+
+</mapper>
